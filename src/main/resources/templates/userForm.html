@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Form</title>
+    <script>
+        function validateForm() {
+            let form = document.forms["userForm"];
+            let name = form["name"].value.trim();
+            let lastName = form["lastName"].value.trim();
+            let email = form["email"].value.trim();
+            let age = form["age"].value.trim();
+
+            let errors = [];
+            if (name === "") errors.push("Name is required.");
+            if (lastName === "") errors.push("Last name is required.");
+            if (email == "") {
+                errors.push("Email is required.");
+            } else if (!email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
+                errors.push("Invalid email format.");
+            }
+            if (age === "" || isNaN(age) || age < 0 || age > 150) {
+                errors.push("Age must be a number between 0 and 150.");
+            }
+
+            if (errors.length > 0) {
+                alert(errors.join("\n"));
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+<h2 th:text="${user.id != null} ? 'Edit User' : 'Add New User'"></h2>
+
+<form name="userForm"
+      th:action="@{/users/{action}(action=${user.id == null ? 'add' : 'update'})}"
+      th:object="${user}"
+      method="post"
+      onsubmit="return validateForm()">
+
+    <input type="hidden" th:field="*{id}" name="id"/>
+
+    <label>Name:</label>
+    <input type="text" th:field="*{name}" name="name" required />
+    <br/>
+
+    <label>Last Name:</label>
+    <input type="text" th:field="*{lastName}" name="lastName" required />
+    <br/>
+
+    <label>Email:</label>
+    <input type="email" th:field="*{email}" name="email" required />
+    <br/>
+
+    <label>Age:</label>
+    <input type="number" th:field="*{age}" name="age" required />
+    <br/>
+
+    <button type="submit">Save</button>
+</form>
+<br/>
+<a href="/users">Back to list</a>
+</body>
+</html>
