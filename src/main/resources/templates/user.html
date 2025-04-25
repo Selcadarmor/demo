@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Userv Page</title>
+</head>
+<body>
+    <h1>Welcome, <span sec:authentication="name"></span>!</h1>
+    <p>Your personal date:</p>
+    <ul>
+        <li>Name: <span th:text="${user.name}"></span></li>
+        <li>Last Name: <span th:tx="${user.last_name}"></span></li>
+        <li> Email: <span th:text="${user.email}"></span></li>
+        <li>Age: <span th:text="${user.age}"></span></li>
+    </ul>
+
+    <div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+</body>
+</html>

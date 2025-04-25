@@ -16,5 +16,14 @@ public class HomeController {
         model.addAttribute("messages", mesages);
         return "home";
     }
+
+    @GetMapping(value = "/home")
+    public String homeAuthenticated(Model model) {
+        List<String> messages = new ArrayList<>();
+        messages.add("Welcome to the home page!");
+        model.addAttribute("messages", messages);
+        return "home";
+
+    }
 }
 
