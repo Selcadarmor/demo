@@ -8,22 +8,23 @@ import java.util.List;
 
 @Controller
 public class HomeController {
-    @GetMapping(value="/")
-    public String home(Model model) {
-        List<String> mesages = new ArrayList<>();
-        mesages.add("Hello, user!");
-        mesages.add("Welcome to my first application!");
-        model.addAttribute("messages", mesages);
-        return "home";
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
-    @GetMapping(value = "/home")
+    @GetMapping("/home")
     public String homeAuthenticated(Model model) {
         List<String> messages = new ArrayList<>();
         messages.add("Welcome to the home page!");
         model.addAttribute("messages", messages);
         return "home";
+    }
 
+    @GetMapping("/")
+    public String redirectToHome() {
+        return "redirect:/home";
     }
 }
 

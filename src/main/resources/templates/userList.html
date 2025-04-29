@@ -6,6 +6,10 @@
 </head>
 <body>
 <h2>User List</h2>
+<form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit">Logout</button>
+</form>
+
 <a th:href="@{/users/add}">Add New User</a>
 <br/><br/>
 
