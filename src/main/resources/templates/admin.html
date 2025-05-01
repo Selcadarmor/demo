@@ -6,16 +6,13 @@
 </head>
 <body>
 <h1>Welcome, Admin!</h1>
-
-
+<form th:action="@{/user}" method="get" style="display:inline;">
+    <button type="submit">View My Profile</button>
+</form>
 <form th:action="@{/logout}" method="post" style="display:inline;">
     <button type="submit">Logout</button>
 </form>
-
 <br/><br/>
-
-
 <a th:href="@{/admin/users}">Manage Users</a>
-
 </body>
 </html>

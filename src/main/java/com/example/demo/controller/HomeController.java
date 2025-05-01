@@ -9,6 +9,11 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+    @GetMapping("/")
+    public String rootRedirect() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -20,11 +25,6 @@ public class HomeController {
         messages.add("Welcome to the home page!");
         model.addAttribute("messages", messages);
         return "home";
-    }
-
-    @GetMapping("/")
-    public String redirectToHome() {
-        return "redirect:/home";
     }
 }
 

@@ -2,45 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Registration</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Register</h2>
-        <div th:if="${message}" class="alert-info">
-            <p th:text="${message}"></p>
-        </div>
-        <form th:action="@{/register}" th:object="${user}" method="post">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" th:field="*{username}" class="form-control" required/>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" th:field="*{password}" class="form-control" required/>
-            </div>
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" th:field="*{name}" class="form-control" required/>
-            </div>
-            <div class="form-group">
-                <label for="lastName">Last Name:</label>
-                <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required/>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" th:field="*{email}" class="form-control" required/>
-            </div>
-            <div class="form-group">
-                <label for="age">Age:</label>
-                <input type="number" id="age" th:field="*{age}" class="form-control" required/>
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-        <p>Alredy have an account ? <a href="/login">Login here</a></p>
+
+<h1>Register</h1>
+
+<div th:if="${message}">
+    <p style="color:red" th:text="${message}"></p>
+</div>
+
+<form th:action="@{/register}" method="post" th:object="${user}">
+
+    <label for="username">Username: </label>
+    <input type="text" id="username" th:field="*{username}" required>
+    <div th:if="${#fields.hasErrors('username')}" style="color:red">
+        <p th:errors="*{username}">Username Error</p>
     </div>
-    <script src="/js/script.js"></script>
+    <br>
+
+    <label for="password">Password: </label>
+    <input type="password" id="password" th:field="*{password}" required>
+    <div th:if="${#fields.hasErrors('password')}" style="color:red">
+        <p th:errors="*{password}">Password Error</p>
+    </div>
+    <br>
+
+    <label for="name">Name: </label>
+    <input type="text" id="name" th:field="*{name}" required>
+    <div th:if="${#fields.hasErrors('name')}" style="color:red">
+        <p th:errors="*{name}">Name Error</p>
+    </div>
+    <br>
+
+    <label for="lastName">Last Name: </label>
+    <input type="text" id="lastName" th:field="*{lastName}" required>
+    <div th:if="${#fields.hasErrors('lastName')}" style="color:red">
+        <p th:errors="*{lastName}">Last Name Error</p>
+    </div>
+    <br>
+
+    <label for="email">Email: </label>
+    <input type="email" id="email" th:field="*{email}" required>
+    <div th:if="${#fields.hasErrors('email')}" style="color:red">
+        <p th:errors="*{email}">Email Error</p>
+    </div>
+    <br>
+
+    <label for="age">Age: </label>
+    <input type="number" id="age" th:field="*{age}" required>
+    <div th:if="${#fields.hasErrors('age')}" style="color:red">
+        <p th:errors="*{age}">Last Name Error</p>
+    </div>
+    <br>
+
+    <button type="submit">Register</button>
+</form>
+
 </body>
 </html>

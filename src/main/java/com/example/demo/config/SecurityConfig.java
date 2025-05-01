@@ -27,14 +27,16 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home/**", "/login", "/register").permitAll()
-                        .requestMatchers("/admin/**", "/users**/").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // роль с префиксом ROLE_
+                        .requestMatchers("/users/**").hasRole("ADMIN") // роль с префиксом ROLE_
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // роль с префиксом ROLE_
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .failureUrl("/login?error=true")
                         .defaultSuccessUrl("/user", true)
+                        .successHandler(successUserHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -57,5 +59,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
