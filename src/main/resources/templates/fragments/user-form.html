@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="userFormFragment(user)">
+    <h5 class="mb-3 mt-2" th:text="${user.id != null ? 'Edit User' : 'Add New User'}"></h5>
+    <div class="p-3 border rounded bg-white">
+        <form name="userForm"
+              th:action="@{/admin/{action}(action=${user.id == null ? 'add' : 'update'})}"
+              th:object="${user}"
+              method="post"
+              onsubmit="return validateForm()">
+
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Name:</label>
+                <input class="form-control" type="text" th:field="*{name}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Last Name:</label>
+                <input class="form-control" type="text" th:field="*{lastName}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email:</label>
+                <input class="form-control" type="email" th:field="*{email}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Age:</label>
+                <input class="form-control" type="number" th:field="*{age}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Roles:</label>
+                <select class="form-select" multiple required name="roles">
+                    <option th:each="role : ${allRoles}"
+                            th:value="${role.name}"
+                            th:text="${role.name}"
+                            th:selected="${user.roles != null and user.roles.contains(role)}">
+                    </option>
+                </select>
+            </div>
+            <button class="btn btn-success" type="submit">Save</button>
+        </form>
+    </div>
+</div>

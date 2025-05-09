@@ -6,10 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import  org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -25,11 +27,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/admin/delete/**"))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home/**", "/login", "/register").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // роль с префиксом ROLE_
-                        .requestMatchers("/users/**").hasRole("ADMIN") // роль с префиксом ROLE_
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // роль с префиксом ROLE_
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        ///.requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -43,9 +47,9 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll());
-
         return http.build();
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
