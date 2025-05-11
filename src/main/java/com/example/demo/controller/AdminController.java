@@ -5,10 +5,12 @@ import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,36 +34,74 @@ public class AdminController {
         private RoleRepository roleRepository;
 
 
-        @GetMapping
-        public String adminHome(Model model, Principal principal) {
-            String username = principal.getName();
-            Optional<User> adminOpt = userService.findByUsername(username);
-            adminOpt.ifPresent(admin -> model.addAttribute("currentUser", admin));
-            model.addAttribute("users", userService.getAllUser());
-            model.addAttribute("allRoles", roleRepository.findAll());
-            model.addAttribute("user", new User());
+    @GetMapping
+    public String adminHome(Model model, Principal principal) {
+        String username = principal.getName();
+        Optional<User> adminOpt = userService.findByUsername(username);
+        if (adminOpt.isPresent()) {
+            User user = adminOpt.get();
+            model.addAttribute("user", user);
+        }
+
+        model.addAttribute("users", userService.getAllUser());
+        model.addAttribute("allRoles", roleRepository.findAll());
+        model.addAttribute("user", new User());
+        return "admin";
+    }
+
+
+
+
+    @PostMapping("/update")
+    public String updateUser(@Valid @ModelAttribute("user") User user,
+                             BindingResult result,
+                             @RequestParam("roles") Long[] roles) {
+
+        if (result.hasErrors()) {
             return "admin";
         }
 
 
-
-        @PostMapping("/add")
-        public String addUser(@ModelAttribute User user,
-                              @RequestParam("roles") String[] roles) {
-            Set<Role> roleSet = new HashSet<>();
-            for (String roleName : roles) {
-                Role role = roleRepository.findByName(roleName);
-                if (role != null) {
-                    roleSet.add(role);
-                }
+        Set<Role> roleSet = new HashSet<>();
+        for (Long roleId : roles) {
+            Role role = roleRepository.findById(roleId).orElse(null);
+            if (role != null) {
+                roleSet.add(role);
             }
-            user.setRoles(roleSet);
-            userService.save(user);
-            return "redirect:/admin";
         }
 
+        user.setRoles(roleSet);
+        userService.update(user);
 
-        @GetMapping("/edit/{id}")
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/add")
+    public String addUser(@Valid @ModelAttribute("user") User user,
+                          BindingResult result,
+                          @RequestParam("roles") Long[] roles) {
+
+        if (result.hasErrors()) {
+            return "admin";
+        }
+
+        Set<Role> roleSet = new HashSet<>();
+        for (Long roleId : roles) {
+            Role role = roleRepository.findById(roleId).orElse(null);
+            if (role != null) {
+                roleSet.add(role);
+            }
+        }
+        user.setRoles(roleSet);
+
+        userService.save(user);
+        return "redirect:/admin";
+    }
+
+
+
+
+    @GetMapping("/edit/{id}")
         public String showEditForm(@PathVariable("id") Long id, Model model) {
             User user = userService.getUserById(id);
             model.addAttribute("user", user);
@@ -71,23 +111,7 @@ public class AdminController {
         }
 
 
-        @PostMapping("/update")
-        public String updateUser(@ModelAttribute("user") User user,
-                                 @RequestParam("roles") String[] roles) {
-            Set<Role> roleSet = new HashSet<>();
-            for (String roleName : roles) {
-                Role role = roleRepository.findByName(roleName);
-                if (role != null) {
-                    roleSet.add(role);
-                }
-            }
-            user.setRoles(roleSet);
-            userService.update(user);
-            return "redirect:/admin";
-        }
-
-
-        @PostMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
         public String deleteUser(@PathVariable Long id) {
             userService.delete(id);
             return "redirect:/admin";

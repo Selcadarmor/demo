@@ -67,7 +67,7 @@ public class UserService {
     public List<User> getAllUser() {
         return userRepository.findAll();
     }
-
+    @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }

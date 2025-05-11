@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import java.util.Set;
@@ -13,6 +15,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
+@NamedQueries({
+        @NamedQuery(name = "Role.findByName", query = "SELECT r FROM Role r WHERE r.name = :name")
+})
 public class Role implements GrantedAuthority {
 
     @Id
