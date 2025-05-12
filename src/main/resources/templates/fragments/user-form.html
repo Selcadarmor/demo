@@ -5,7 +5,7 @@
     <h5 class="mb-3 mt-2" th:text="${user.id != null ? 'Edit User' : 'Add New User'}"></h5>
     <div class="p-3 border rounded bg-white">
         <form name="userForm"
-              th:action="@{/admin/{action}(action=${user.id == null ? 'add' : 'update'})}"
+              th:action="@{${user.id == null ? '/admin/add' : '/admin/update'}}"
               th:object="${user}"
               method="post"
               onsubmit="return validateForm()">

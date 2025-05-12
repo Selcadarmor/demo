@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -34,6 +36,8 @@ public class AdminController {
         private RoleRepository roleRepository;
 
 
+
+
     @GetMapping
     public String adminHome(Model model, Principal principal) {
         String username = principal.getName();
@@ -41,11 +45,13 @@ public class AdminController {
         if (adminOpt.isPresent()) {
             User user = adminOpt.get();
             model.addAttribute("user", user);
+        } else {
+            model.addAttribute("user", new User());
         }
 
         model.addAttribute("users", userService.getAllUser());
         model.addAttribute("allRoles", roleRepository.findAll());
-        model.addAttribute("user", new User());
+        model.addAttribute("newUser", new User());
         return "admin";
     }
 
@@ -77,7 +83,7 @@ public class AdminController {
     }
 
     @PostMapping("/add")
-    public String addUser(@Valid @ModelAttribute("user") User user,
+    public String addUser(@Valid @ModelAttribute("newUser") User user,
                           BindingResult result,
                           @RequestParam("roles") Long[] roles) {
 
@@ -102,19 +108,18 @@ public class AdminController {
 
 
     @GetMapping("/edit/{id}")
-        public String showEditForm(@PathVariable("id") Long id, Model model) {
-            User user = userService.getUserById(id);
-            model.addAttribute("user", user);
-            model.addAttribute("users",userService.getAllUser());
-            model.addAttribute("allRoles", roleRepository.findAll());
-            return "admin";
-        }
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        model.addAttribute("users",userService.getAllUser());
+        model.addAttribute("allRoles", roleRepository.findAll());
+        return "admin";
+    }
 
 
     @PostMapping("/delete/{id}")
-        public String deleteUser(@PathVariable Long id) {
-            userService.delete(id);
-            return "redirect:/admin";
-        }
+    public String deleteUser(@PathVariable Long id) {
+        userService.delete(id);
+        return "redirect:/admin";
     }
-
+}
