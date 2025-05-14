@@ -1,0 +1,51 @@
+<<!-- Фрагмент edit-user-form для редактирования пользователя -->
+<div th:fragment="editUserForm(user, formAction, allRoles)">
+  <div class="modal-header">
+    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <form  th:object="${user}" th:action="${formAction}" method="post">
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="userName" th:field="*{name}" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="userLastName" th:field="*{lastName}" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="userEmail" th:field="*{email}" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="age" class="form-label">Age</label>
+        <input type="number" class="form-control" id="userAge" th:field="*{age}" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="userUsername" th:field="*{username}" disabled>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="userPassword" th:field="*{password}" disabled>
+      </div>
+
+      <div class="mb-3">
+        <label for="roles" class="form-label">Roles</label>
+        <select multiple class="form-select" id="userRoles" th:field="*{roles}" required>
+          <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success">Save Changes</button>
+    </form>
+  </div>
+</div>

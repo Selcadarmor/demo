@@ -1,0 +1,45 @@
+<<div th:fragment="addUserForm(newUser, formAction, allRoles)">
+    <!-- Указываем th:object для привязки формы к объекту newUser -->
+    <form th:action="@{${formAction}}" th:object="${newUser}" method="post" id="addUserForm">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="userName" th:field="*{name}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="userLastName" th:field="*{lastName}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="userEmail" th:field="*{email}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="age" class="form-label">Age</label>
+            <input type="number" class="form-control" id="userAge" th:field="*{age}" required min="18">
+        </div>
+
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="userUsername" th:field="*{username}" required minlength="5">
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="userPassword" th:field="*{password}" required minlength="6">
+        </div>
+
+        <div class="mb-3">
+            <label for="roles" class="form-label">Roles</label>
+            <select multiple class="form-select" id="userRoles" th:field="*{roles}" required>
+                <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>

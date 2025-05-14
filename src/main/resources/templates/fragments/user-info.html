@@ -1,5 +1,6 @@
+<!-- Фрагмент userInfoFragment для отображения информации о пользователе -->
 <div th:fragment="userInfoFragment(user)" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
-    <h5 class="mb-3 mt-2" style="font-weight: 400;">User Information Page</h5>
+    <h5 class="mb-3 mt-2" style="font-weight: 400;">User Information</h5>
     <div class="p-3 border rounded bg-white">
         <caption class="text-start mb-2 fw-semibold">About User</caption>
         <table class="table table-striped table-hover mb-0">
@@ -28,6 +29,7 @@
         </table>
     </div>
 
+    <!-- Блок для администраторов -->
     <div sec:authorize="hasRole('ROLE_ADMIN')">
         <h6 class="mt-4">Admin Information</h6>
         <p>You are an administrator!</p>

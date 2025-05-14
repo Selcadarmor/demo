@@ -31,9 +31,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-@NamedQueries({
-        @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
-})
+
 public class User implements UserDetails {
 
     @Id
@@ -74,7 +72,9 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    public User() {}
+    public User() {
+        this.roles = new HashSet<>();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
