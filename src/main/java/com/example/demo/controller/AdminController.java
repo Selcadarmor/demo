@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -49,7 +48,7 @@ public class AdminController {
         model.addAttribute("users", userService.getAllUser());
         model.addAttribute("allRoles", roleRepository.findAll());
         model.addAttribute("newUser", new User());
-        model.addAttribute("formAction", "/admin/add");  // для нового пользователя
+        model.addAttribute("formAction", "/admin/update");
         return "admin";
     }
 
@@ -57,14 +56,13 @@ public class AdminController {
     public String showEditForm(@PathVariable("id") Long id, Model model, Principal principal) {
         User user = userService.getUserById(id);
         if (user == null) {
-            return "redirect:/admin"; // Если пользователь не найден
+            return "redirect:/admin";
         }
         String username = principal.getName();
         model.addAttribute("user", userService.findByUsername(username).orElse(new User()));
         model.addAttribute("editUser", user);
-        //model.addAttribute("users", userService.getAllUser());
         model.addAttribute("allRoles", roleRepository.findAll());
-        model.addAttribute("formAction", "/admin/update");  // для обновления пользователя
+        model.addAttribute("formAction", "/admin/update");
         return "admin";
     }
 
@@ -73,7 +71,7 @@ public class AdminController {
                              BindingResult result,
                              @RequestParam("roles") Long[] roles) {
         if (result.hasErrors()) {
-            return "admin";
+            return "redirect:/admin";
         }
 
         Set<Role> roleSet = new HashSet<>();

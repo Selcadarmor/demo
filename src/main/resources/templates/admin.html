@@ -58,18 +58,12 @@
                             <!-- Вставка формы добавления нового пользователя -->
                             <div th:replace="~{fragments/add-user-form :: addUserForm(newUser=${newUser}, formAction=${formAction}, allRoles=${allRoles})}"></div>
                         </div>
-
-                        <div class="tab-pane fade" id="edit-user">
-                            <!-- Вставка формы редактирования пользователя -->
-                            <div th:replace="~{fragments/edit-user-form :: editUserForm(user=${user}, formAction=${formAction}, allRoles=${allRoles})}"></div>
-                        </div>
-
                     </div>
                 </div>
 
                 <!-- Панель пользователя -->
                 <div class="tab-pane fade" id="user-panel" role="tabpanel">
-                    <div th:replace="~{fragments/userInfoFragment} (user)"></div>
+                    <div th:replace="~{fragments/user-info :: userInfoFragment(user=${user})}"></div>
                 </div>
             </div>
         </div>
@@ -82,26 +76,25 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         const editButtons = document.querySelectorAll('.edit-btn');
-        const editUserModal = document.getElementById('editUserModal');
 
         editButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const userId = this.getAttribute('data-id');
-                const userName = this.getAttribute('data-name');
-                const userLastName = this.getAttribute('data-lastname');
-                const userEmail = this.getAttribute('data-email');
-                const userAge = this.getAttribute('data-age');
-                const userRoles = JSON.parse(this.getAttribute('data-roles'));
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const lastName = this.getAttribute('data-lastname');
+                const email = this.getAttribute('data-email');
+                const age = this.getAttribute('data-age');
+                const roles = JSON.parse(this.getAttribute('data-roles'));
 
-                document.getElementById('userId').value = userId;
-                document.getElementById('userName').value = userName;
-                document.getElementById('userLastName').value = userLastName;
-                document.getElementById('userEmail').value = userEmail;
-                document.getElementById('userAge').value = userAge;
+                document.getElementById('id').value = id;
+                document.getElementById('name').value = name;
+                document.getElementById('lastName').value = lastName;
+                document.getElementById('email').value = email;
+                document.getElementById('age').value = age;
 
                 const rolesSelect = document.getElementById('userRoles');
                 for (let option of rolesSelect.options) {
-                    option.selected = userRoles.some(role => role.id === parseInt(option.value));
+                    option.selected = roles.some(role => role.id === parseInt(option.value));
                 }
             });
         });

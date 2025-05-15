@@ -15,7 +15,6 @@
             </tr>
             </thead>
             <tbody>
-            <!-- Перебор всех пользователей -->
             <tr th:each="user : ${users}">
                 <td th:text="${user.id}"></td>
                 <td th:text="${user.name}"></td>
@@ -23,19 +22,17 @@
                 <td th:text="${user.email}"></td>
                 <td th:text="${user.age}"></td>
                 <td>
-                    <!-- Перебор всех ролей пользователя -->
                     <span th:each="role : ${user.roles}">
-                            <span th:text="${role.name}"></span><br />
-                        </span>
+                        <span th:text="${role.name}"></span><br />
+                    </span>
                 </td>
                 <td>
-                    <!-- Кнопка редактирования, открывает модальное окно -->
-                    <a class="btn btn-sm btn-primary edit-btn me-1"
-                       th:data-bs-toggle="modal"
-                       th:data-bs-target="editUserModal"
-                       th:href="@{'/admin/edit/' + ${user.id}}">Edit</a>
+                    <!-- Кнопка для открытия модального окна редактирования -->
+                    <button class="btn btn-sm btn-primary me-1"
+                            data-bs-toggle="modal"
+                            th:attr="data-bs-target='#editUserModal__' + ${user.id}">Edit</button>
 
-                    <!-- Форма для удаления -->
+                    <!-- Форма удаления -->
                     <form th:action="@{'/admin/delete/' + ${user.id}}"
                           method="post"
                           style="display:inline;"
@@ -43,6 +40,16 @@
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                     </form>
+
+                    <!-- Модальное окно редактирования -->
+                    <div class="modal fade" th:id="'editUserModal__' + ${user.id}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!-- Вставка Thymeleaf-фрагмента формы редактирования -->
+                                <div th:replace="~{fragments/edit-user-form :: editUserForm(${user}, '/admin/update', ${allRoles})}"></div>
+                            </div>
+                            </div>
+                    </div>
                 </td>
             </tr>
             </tbody>
