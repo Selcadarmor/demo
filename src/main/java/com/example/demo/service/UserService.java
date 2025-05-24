@@ -1,5 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RoleDTO;
+import com.example.demo.dto.UserRequestDTO;
+import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.dto.UserUpdateDTO;
+import com.example.demo.dto.UserRegisterDTO;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.RoleRepository;
@@ -8,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -20,59 +28,98 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository,
+                       RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
-    }
-
-    @Transactional
-    public String save(User user) {
-        Optional<User> userOpt = userRepository.findByUsername(user.getUsername());
-        if (userOpt.isPresent()) {
-            return "Username already exists!";
-        }
-
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        if (userRole == null) {
-            userRole = new Role();
-            userRole.setName("ROLE_USER");
-            roleRepository.save(userRole);
-        }
-
-        user.setRoles(Set.of(userRole));
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-
-        userRepository.save(user);
-        return "User registered successfully!";
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public Optional<UserResponseDTO> getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(UserMapper::toResponseDTO);
     }
 
     @Transactional
     public void delete(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with ID: " + id);
+        }
         userRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getAllUser() {
+        return userRepository.findAll().stream()
+                .map(UserMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<UserResponseDTO> findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(UserMapper::toResponseDTO);
+    }
+
+
     @Transactional
-    public void update(User user) {
-        userRepository.save(user);
+    public UserResponseDTO save(UserRequestDTO dto) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists!");
+        }
+
+        Set<Role> roles = mapRolesFromDTOs(dto.getRoles());
+        User user = UserMapper.toEntity(dto, roles, passwordEncoder);
+
+        return UserMapper.toResponseDTO(userRepository.save(user));
+    }
+
+
+    @Transactional
+    public UserResponseDTO update(Long id, UserUpdateDTO dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Set<Role> roles = mapRolesFromDTOs(dto.getRoles());
+        UserMapper.updateEntityFromUpdateDTO(user, dto, roles);
+
+        return UserMapper.toResponseDTO(userRepository.save(user));
+    }
+
+
+    @Transactional
+    public UserResponseDTO register(UserRegisterDTO dto) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists!");
+        }
+
+        Role defaultRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Default role not found"));
+
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setName(dto.getName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setAge(dto.getAge());
+        user.setRoles(Set.of(defaultRole));
+
+        return UserMapper.toResponseDTO(userRepository.save(user));
     }
 
     @Transactional(readOnly = true)
-    public List<User> getAllUser() {
-        return userRepository.findAll();
-    }
-    @Transactional(readOnly = true)
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
     public boolean existsById(Long id) {
         return userRepository.existsById(id);
+    }
+
+
+    private Set<Role> mapRolesFromDTOs(Set<RoleDTO> roleDTOs) {
+        return roleDTOs.stream()
+                .map(dto -> roleRepository.findById(dto.getId())
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + dto.getName())))
+                .collect(Collectors.toSet());
     }
 }

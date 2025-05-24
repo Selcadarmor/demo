@@ -1,0 +1,39 @@
+
+<form id="userForm" class="p-3 border rounded bg-white">
+  <div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input id="name" name="name" type="text" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="lastName" class="form-label">Last Name</label>
+    <input id="lastName" name="lastName" type="text" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input id="email" name="email" type="email" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="age" class="form-label">Age</label>
+    <input id="age" name="age" type="number" class="form-control" required min="1">
+  </div>
+
+  <div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <input id="username" name="username" type="text" class="form-control" required minlength="5">
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input id="password" name="password" type="password" class="form-control" required minlength="6">
+  </div>
+
+  <div class="mb-3">
+    <label for="roles" class="form-label">Roles</label>
+    <select  id="roles" name="roles" class="form-select" multiple  required></select>
+  </div>
+
+  <button type="submit" class="btn btn-success">Submit</button>
+</form>

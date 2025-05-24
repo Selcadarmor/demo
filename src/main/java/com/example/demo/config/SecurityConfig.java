@@ -26,12 +26,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/admin/delete/**"))
+                        .ignoringRequestMatchers("/api/**")
+                        .ignoringRequestMatchers("/admin/delete/**", "/static/**", "/api/register**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home/**", "/login", "/register").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        ///.requestMatchers("/users/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/js/**", "/css/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/", "/home/**", "/login", "/register", "/api/register/**").permitAll()
+                        .requestMatchers("/admin/**", "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**", "/api/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

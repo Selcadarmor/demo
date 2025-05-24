@@ -56,7 +56,7 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @Min(value = 0, message = "Age must be non-negative")
+    @Min(value = 1, message = "Age must be non-negative")
     @Column(name = "age")
     private int age;
 
