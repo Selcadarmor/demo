@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 @Component
 public class RoleMapper {
+    private RoleMapper() {
+    }
 
     public static RoleDTO convertToDTO(Role role) {
 

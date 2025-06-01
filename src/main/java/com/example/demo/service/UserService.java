@@ -98,14 +98,7 @@ public class UserService {
         Role defaultRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Default role not found"));
 
-        User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setName(dto.getName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setAge(dto.getAge());
-        user.setRoles(Set.of(defaultRole));
+        User user = UserMapper.toEntity(dto, defaultRole, passwordEncoder);
 
         return UserMapper.toResponseDTO(userRepository.save(user));
     }

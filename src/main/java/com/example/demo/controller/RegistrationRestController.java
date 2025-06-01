@@ -31,7 +31,7 @@ public class RegistrationRestController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, BindingResult bindingResult) {
+    public ResponseEntity<Object> registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream()
                     .map(error -> error.getField() + ": " + error.getDefaultMessage())

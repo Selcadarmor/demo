@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
@@ -45,66 +45,63 @@ public class AdminRestController {
         this.roleMapper = roleMapper;
     }
 
-
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<UserResponseDTO> users = userService.getAllUser();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseEntity.ok(users);
     }
-
 
     @GetMapping("/roles")
     public ResponseEntity<Set<RoleDTO>> getAllRoles() {
         Set<Role> roles = new HashSet<>(roleRepository.findAll());
         Set<RoleDTO> roleDTOs = roleMapper.convertToDTOSet(roles);
-        return new ResponseEntity<>(roleDTOs, HttpStatus.OK);
+        return ResponseEntity.ok(roleDTOs);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
-                .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(user -> ResponseEntity.ok(user))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO dto) {
         try {
             UserResponseDTO createdUser = userService.save(dto);
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            // Можно добавить тело с ошибкой, если нужно
+            return ResponseEntity.badRequest().build();
         }
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid
-                                            @RequestBody UserUpdateDTO dto,
-                                        BindingResult bindingResult) {
+    public ResponseEntity<Object> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateDTO dto,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream()
                     .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+                    .toList();
+            return ResponseEntity.badRequest().body(Map.<String, List<String>>of("errors", errors));
         }
         try {
             UserResponseDTO updatedUser = userService.update(id, dto);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+            return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.<String, String>of("error", e.getMessage()));
         }
     }
-
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (!userService.existsById(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
         userService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }
